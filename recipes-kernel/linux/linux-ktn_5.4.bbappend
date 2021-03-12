@@ -1,1 +1,0 @@
-SCR_URI += "file:///0001-defconfig-ext4-security.patch"

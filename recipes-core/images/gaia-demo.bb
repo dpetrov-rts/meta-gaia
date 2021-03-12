@@ -33,6 +33,7 @@ IMAGE_INSTALL += " \
 	docker-moby \
 	initscripts \
 	htop \
+	alsa-utils \
  "
 
 # If U-Boot is not included into the rootfs itself, we still need it for
