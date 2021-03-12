@@ -1,0 +1,85 @@
+DISTRO="eg"
+DISTRO_NAME ?= "EG"
+DISTRO_VERSION ?= "1.0"
+DISTRO_CODENAME ?= "eg-dunfell"
+
+MAINTAINER="willie.wiholm@egelectronics.com"
+TARGET_VENDOR = "-eg"
+
+
+# remove '-g' because otherwise release-builds with
+# the meta-toolchain are build with debugging symbols
+FULL_OPTIMIZATION_remove = "-g"
+
+IMAGE_NAME = "${IMAGE_BASENAME}-${DATE}"
+IMAGE_NAME[vardepsexclude] = "TIME DATE DATETIME"
+
+DISTRO_EXTRA_RDEPENDS = "packagegroup-core-boot"
+DISTRO_EXTRA_RRECOMMENDS = "kernel-module-af-packet"
+
+GCNANO_USERLAND_USE_VENDOR_DIR = "0"
+
+# add the manifest and the licenses file on image generated
+COPY_LIC_MANIFEST = "1"
+
+# =========================================================================
+# include some basic settings copied from poky
+# =========================================================================
+require conf/distro/include/eg-base.inc
+
+# =========================================================================
+# build info
+# =========================================================================
+BUILDCFG_VARS += "DISTRO_CODENAME"
+BUILDCFG_VARS += "${@'ACCEPT_EULA_' + d.getVar('MACHINE')}"
+BUILDCFG_VARS += "GCCVERSION"
+BUILDCFG_VARS += "PREFERRED_PROVIDER_virtual/kernel"
+BUILDCFG_VARS += "PREFERRED_VERSION_${PREFERRED_PROVIDER_virtual/kernel}"
+
+# writes build information to target filesystem on /etc/build
+IMAGE_BUILDINFO_VARS = "${BUILDCFG_VARS}"
+INHERIT += "image-buildinfo"
+
+
+# =========================================================================
+# default/preferred providers
+# =========================================================================
+PREFERRED_PROVIDER_libevent = "libevent-fb"
+PREFERRED_PROVIDER_jpeg = "libjpeg-turbo"
+PREFERRED_PROVIDER_jpeg-native = "libjpeg-turbo-native"
+
+SPLASH = "${@bb.utils.contains('COMBINED_FEATURES', 'splashscreen', 'psplash-drm', '', d)}"
+PREFERRED_PROVIDER_virtual/psplash = "${@bb.utils.contains('COMBINED_FEATURES', 'splashscreen', 'psplash-drm', '', d)}"
+
+# =========================================================================
+# init system
+# =========================================================================
+VIRTUAL-RUNTIME_init_manager = "systemd"
+VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
+
+DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
+
+DISTRO_FEATURES = " \
+	alsa \
+	argp \
+	ext2 \
+	ext4 \
+	gplv3 \
+	gstreamer \
+	ipv4 \
+	ipv6 \
+	largefile \
+	multiarch \
+	nfs \
+	opengl \
+	optee \
+	pam \
+	pulseaudio \
+	splashscreen \
+	usbgadget \
+	usbhost \
+	xattr \
+	zeroconf \
+	${DISTRO_FEATURES_LIBC} \
+	systemd \
+"
